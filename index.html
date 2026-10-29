@@ -1,1 +1,456 @@
-<!doctype html><html lang="id"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#10110f"/><meta name="description" content="AdamDEX — Read beyond."/><title>AdamDEX — Read beyond</title><link rel="preconnect" href="https://uploads.mangadex.org"/><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"></head><body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdamDex</title>
+<meta name="description" content="AdamDex — baca manga, manhwa, dan manhua gratis / Read manga, manhwa and manhua online.">
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230f766e%22/><path d=%22M9 24L16 8l7 16M11.8 18.5h8.4%22 stroke=%22white%22 stroke-width=%222.6%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f7;--surface:#fff;--ink:#14181d;--muted:#667085;--line:#e1e5ea;--accent:#0f766e;--accent-ink:#fff;--shadow:0 1px 2px rgba(16,24,40,.06)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101316;--surface:#181c21;--ink:#eceff3;--muted:#98a2b3;--line:#272c33;--accent:#2dd4bf;--accent-ink:#06201d;--shadow:none}}
+:root[data-theme=dark]{--bg:#101316;--surface:#181c21;--ink:#eceff3;--muted:#98a2b3;--line:#272c33;--accent:#2dd4bf;--accent-ink:#06201d;--shadow:none}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.55 Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{position:sticky;top:0;z-index:20;background:var(--surface);background:color-mix(in srgb,var(--surface) 85%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;gap:10px;align-items:center}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;letter-spacing:-.02em;white-space:nowrap}
+.logo span{color:var(--accent)}
+.search{flex:1;min-width:0;display:flex}
+.search input{width:100%;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:500}
+.btn:disabled{opacity:.45;cursor:default}
+main{max-width:1120px;margin:0 auto;padding:18px 16px 60px}
+h1,h2{letter-spacing:-.01em;margin:0 0 12px}
+h1{font-size:24px}h2{font-size:18px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.filters select{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);max-width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.card{display:block}
+.card .img{aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--line);box-shadow:var(--shadow)}
+.card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.card:hover img{transform:scale(1.04)}
+.card .t{margin-top:7px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .s{font-size:12px;color:var(--muted)}
+.center{text-align:center;padding:24px 0;color:var(--muted)}
+.more{display:flex;justify-content:center;margin-top:24px}
+.detail{display:grid;grid-template-columns:220px 1fr;gap:24px}
+.detail .cover{width:100%;aspect-ratio:2/3;border-radius:10px;object-fit:cover;background:var(--line)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tag{font-size:12px;padding:2px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.desc{color:var(--muted);max-width:70ch;white-space:pre-line}
+.meta{color:var(--muted);font-size:13px}
+.chead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:28px 0 8px}
+.chead .row{display:flex;gap:8px}
+.chaps{background:var(--surface);border:1px solid var(--line);border-radius:10px;max-height:520px;overflow:auto}
+.chap{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.chap:last-child{border:0}
+.chap:hover{background:var(--bg)}
+.chap b{font-weight:500}
+.chap small{color:var(--muted);flex:none;text-transform:uppercase}
+.rel{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+.reader{max-width:820px;margin:0 auto}
+.rbar{position:sticky;top:57px;z-index:10;display:flex;gap:8px;align-items:center;padding:8px 0;background:var(--bg)}
+.rbar select{flex:1;min-width:0;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.pages img{display:block;width:100%;height:auto;min-height:200px;background:var(--line);margin:0 auto}
+.rfoot{display:flex;justify-content:space-between;gap:8px;padding:20px 0}
+.err{padding:14px;border:1px solid #f0b4b4;background:rgba(220,60,60,.08);border-radius:8px}
+.card .img{position:relative}
+.card:hover .t{color:var(--accent)}
+.bd{position:absolute;left:7px;top:7px;font-size:11px;font-weight:500;padding:2px 9px 2px 8px;border-radius:99px;background:rgba(10,14,16,.68);color:#fff;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.bd::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#9aa4ad;margin-right:6px;vertical-align:1px}
+.s-ongoing::before{background:#34d399}.s-completed::before{background:#60a5fa}.s-hiatus::before{background:#fbbf24}.s-cancelled::before{background:#f87171}
+.sk{aspect-ratio:2/3;border-radius:8px;background:linear-gradient(90deg,var(--line),var(--bg),var(--line));background-size:200% 100%;animation:sh 1.3s infinite linear}
+@keyframes sh{to{background-position:-200% 0}}
+.hero{position:relative;height:320px;border-radius:16px;overflow:hidden;margin-bottom:26px;background:#0b1214;color:#fff}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .7s;pointer-events:none}
+.slide.on{opacity:1;pointer-events:auto}
+.slide .bg{position:absolute;inset:-24px;background-size:cover;background-position:center;filter:blur(26px) brightness(.42) saturate(1.25)}
+.slide .in{position:relative;display:flex;gap:26px;align-items:center;height:100%;padding:24px 30px 40px}
+.pic{width:150px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,.5);flex:none;background:rgba(255,255,255,.1)}
+.tx{min-width:0}
+.tx .k{font-size:13px;color:#5eead4;font-weight:500}
+.tx h2{font-size:30px;line-height:1.12;margin:4px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tx p{margin:0 0 16px;color:rgba(255,255,255,.8);max-width:62ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero .tags{margin:0 0 10px}.hero .tag{border-color:rgba(255,255,255,.35);color:#fff}
+.dots{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.dots button{width:8px;height:8px;border-radius:99px;border:0;background:rgba(255,255,255,.4);padding:0;cursor:pointer;transition:width .25s,background .25s}
+.dots button.on{width:24px;background:#fff}
+.detail .cover{box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.detail h1{font-size:30px;line-height:1.15}
+footer{max-width:1120px;margin:0 auto;padding:22px 16px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
+.up{position:fixed;right:16px;bottom:16px;width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:18px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.up.show{opacity:1;pointer-events:auto}
+@media(max-width:640px){.hero{height:290px}.slide .in{gap:16px;padding:18px 16px 38px}.pic{width:100px}.tx h2{font-size:20px}.tx p{-webkit-line-clamp:2;font-size:13px}.tx .tags{display:none}}
+@media(max-width:640px){
+.bar{flex-wrap:wrap}.search{order:3;flex-basis:100%}.logo{flex:1}
+.detail{grid-template-columns:1fr}.detail .cover{max-width:180px}
+.grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.rbar{top:101px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="logo" href="#/"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M9 24L16 8l7 16M11.8 18.5h8.4" stroke="var(--accent-ink)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Adam<span>Dex</span></b></a>
+  <form class="search" id="sf"><input id="q" type="search" autocomplete="off"></form>
+  <button class="btn" id="rnd"></button>
+  <button class="btn" id="th" aria-label="Theme">◐</button>
+  <button class="btn" id="lg" aria-label="Language"></button>
+</div></header>
+<main id="app"></main>
+<footer id="ft"></footer>
+<button class="up" id="up" aria-label="Top">↑</button>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var app=$("#app");
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* ---------- i18n ---------- */
+var I={
+ id:{search:"Cari judul manga…",details:"Lihat detail",trending:"Sedang populer",foot:"AdamDex · Sumber data MangaDex. Dibuat untuk membaca dengan nyaman.",random:"Acak",popular:"Manga populer",results:"Hasil pencarian",all:"Semua",
+  order:"Urutan",status:"Status",demo:"Demografis",origin:"Asal",genre:"Genre",more:"Muat lebih banyak",loading:"Memuat…",
+  empty:"Tidak ada hasil. Coba kata kunci atau filter lain.",error:"Gagal memuat data. Periksa koneksi lalu coba lagi.",retry:"Coba lagi",
+  chapters:"Chapter",chapter:"Ch.",noChap:"Belum ada chapter untuk bahasa ini.",read:"Baca dari awal",latest:"Chapter terbaru",
+  desc:"Deskripsi",noDesc:"Belum ada deskripsi.",related:"Manga terkait",prev:"‹ Sebelumnya",next:"Berikutnya ›",back:"‹ Detail",
+  quality:"Kualitas",hq:"Tinggi",dq:"Hemat data",asc:"Terlama",desc2:"Terbaru",lang:"Bahasa chapter",
+  followed:"Terpopuler",rating:"Rating tertinggi",createdAt:"Baru ditambahkan",title:"Judul A-Z",relevance:"Paling relevan",
+  ongoing:"Berjalan",completed:"Selesai",hiatus:"Hiatus",cancelled:"Dibatalkan",
+  shounen:"Shounen",shoujo:"Shoujo",seinen:"Seinen",josei:"Josei",ja:"Manga (Jepang)",ko:"Manhwa (Korea)",zh:"Manhua (Cina)",
+  author:"Penulis",year:"Tahun",pages:"halaman",end:"Chapter terakhir.",firstEnd:"Ini chapter pertama."},
+ en:{search:"Search manga title…",details:"View details",trending:"Trending now",foot:"AdamDex · Data from MangaDex. Built for comfortable reading.",random:"Random",popular:"Popular manga",results:"Search results",all:"All",
+  order:"Sort",status:"Status",demo:"Demographic",origin:"Origin",genre:"Genre",more:"Load more",loading:"Loading…",
+  empty:"No results. Try another keyword or filter.",error:"Failed to load data. Check your connection and retry.",retry:"Retry",
+  chapters:"Chapters",chapter:"Ch.",noChap:"No chapters available in this language yet.",read:"Start reading",latest:"Latest chapter",
+  desc:"Description",noDesc:"No description yet.",related:"Related manga",prev:"‹ Previous",next:"Next ›",back:"‹ Details",
+  quality:"Quality",hq:"High",dq:"Data saver",asc:"Oldest",desc2:"Newest",lang:"Chapter language",
+  followed:"Most popular",rating:"Top rated",createdAt:"Recently added",title:"Title A-Z",relevance:"Most relevant",
+  ongoing:"Ongoing",completed:"Completed",hiatus:"Hiatus",cancelled:"Cancelled",
+  shounen:"Shounen",shoujo:"Shoujo",seinen:"Seinen",josei:"Josei",ja:"Manga (Japan)",ko:"Manhwa (Korea)",zh:"Manhua (China)",
+  author:"Author",year:"Year",pages:"pages",end:"This is the last chapter.",firstEnd:"This is the first chapter."}
+};
+var lang=store.get("lang")||((navigator.language||"").slice(0,2)==="id"?"id":"en");
+function t(k){return (I[lang]&&I[lang][k])||I.en[k]||k}
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function pick(o){
+  if(!o)return "";
+  if(typeof o==="string")return o;
+  if(Array.isArray(o)){for(var i=0;i<o.length;i++){var p=pick(o[i]);if(p)return p}return ""}
+  if(o[lang])return o[lang];
+  if(o.en)return o.en;
+  var k=Object.keys(o);return k.length?pick(o[k[0]]):"";
+}
+function api(path){
+  return fetch("/api"+path).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()});
+}
+function arr(res){
+  if(Array.isArray(res))return res;
+  if(!res)return [];
+  if(Array.isArray(res.data))return res.data;
+  if(Array.isArray(res.results))return res.results;
+  if(Array.isArray(res.items))return res.items;
+  return [];
+}
+function proxy(u){
+  if(!u)return "";
+  if(u.indexOf("/api/proxy")>-1)return u.replace(/^https?:\/\/[^/]+/,"");
+  return "/api/proxy?url="+encodeURIComponent(u);
+}
+function coverOf(m){
+  var a=m.attributes||{};
+  var u=m.cover||m.coverUrl||m.cover_url||m.coverImage||m.coverArt||a.cover||"";
+  if(u&&typeof u==="object")u=u.url||u.fileName||"";
+  if(u&&u.indexOf("http")!==0&&u.indexOf("/api/")!==0&&m.id)u="https://uploads.mangadex.org/covers/"+m.id+"/"+u+".512.jpg";
+  if(!u){
+    var rel=(m.relationships||[]).filter(function(r){return r.type==="cover_art"})[0];
+    var f=rel&&((rel.attributes&&rel.attributes.fileName)||rel.fileName);
+    if(f)u="https://uploads.mangadex.org/covers/"+m.id+"/"+f+".512.jpg";
+  }
+  return proxy(u);
+}
+function norm(m){
+  var a=m.attributes||m;
+  var tags=(a.tags||m.tags||[]).map(function(x){
+    if(typeof x==="string")return x;
+    return pick((x.attributes&&x.attributes.name)||x.name);
+  }).filter(Boolean);
+  var people=(m.relationships||[]).filter(function(r){return r.type==="author"||r.type==="artist"})
+    .map(function(r){return r.attributes&&r.attributes.name}).filter(Boolean);
+  var auth=m.authors||m.author||a.author||people;
+  if(Array.isArray(auth))auth=auth.map(function(x){return typeof x==="string"?x:(x&&x.name)||""}).filter(Boolean).filter(function(v,i,s){return s.indexOf(v)===i}).join(", ");
+  return {id:m.id,title:pick(a.title)||pick(m.title)||"Untitled",cover:coverOf(m),desc:pick(a.description||m.description),
+    status:a.status||m.status||"",year:a.year||m.year||"",tags:tags,author:auth||"",
+    type:m.type_label||a.originalLanguage||m.originalLanguage||""};
+}
+function normChap(c){
+  var a=c.attributes||c;
+  return {id:c.id,num:a.chapter!=null?a.chapter:(c.chapter!=null?c.chapter:""),title:a.title||c.title||"",
+    lang:a.translatedLanguage||c.translatedLanguage||c.lang||c.language||"",pages:a.pages||c.pages||0,
+    ext:a.externalUrl||c.externalUrl||""};
+}
+function chapLabel(c){return t("chapter")+" "+(c.num!==""?c.num:"–")+(c.title?" — "+c.title:"")}
+function numSort(a,b){return (parseFloat(a.num)||0)-(parseFloat(b.num)||0)}
+function pagesOf(res,quality){
+  var r=(res&&res.data&&!Array.isArray(res.data))?res.data:res;
+  var list=r.pages||r.images||r.urls;
+  if(Array.isArray(list))return list.map(function(p){return typeof p==="string"?p:(p.url||p.src||"")}).filter(Boolean).map(proxy);
+  var ch=r.chapter||{};
+  var base=r.baseUrl||r.base_url;
+  var files=(quality==="dataSaver"?(ch.dataSaver||ch.data):(ch.data||ch.dataSaver))||[];
+  var q=quality==="dataSaver"&&ch.dataSaver?"data-saver":"data";
+  if(base&&ch.hash)return files.map(function(f){return proxy(base+"/"+q+"/"+ch.hash+"/"+f)});
+  return [];
+}
+function showErr(retry){
+  app.innerHTML='<div class="err">'+esc(t("error"))+'<div style="margin-top:10px"><button class="btn" id="retry">'+esc(t("retry"))+'</button></div></div>';
+  $("#retry").onclick=retry;
+}
+var token=0;
+
+/* ---------- browse ---------- */
+var F={title:"",order:"followedCount",status:"",publicationDemographic:"",originalLanguage:"",tag:""};
+var tagsCache=null;
+function opts(list,cur,allLabel){
+  return '<option value="">'+esc(allLabel)+'</option>'+list.map(function(o){return '<option value="'+esc(o[0])+'"'+(o[0]===cur?" selected":"")+'>'+esc(o[1])+'</option>'}).join("");
+}
+function cardHtml(m){
+  return '<a class="card" href="#/m/'+esc(m.id)+'"><div class="img">'+(m.cover?'<img loading="lazy" alt="" src="'+esc(m.cover)+'">':"")+(m.status?'<span class="bd s-'+esc(m.status)+'">'+esc(t(m.status))+'</span>':"")+'</div><div class="t">'+esc(m.title)+'</div></a>';
+}
+function skel(){var h="";for(var i=0;i<12;i++)h+='<div class="sk"></div>';return h}
+var heroTimer=null;
+function hero(list,my){
+  clearInterval(heroTimer);
+  var el=$("#hero");
+  if(!el||F.title||F.status||F.publicationDemographic||F.originalLanguage||F.tag||F.order!=="followedCount")return;
+  var items=list.filter(function(m){return m.cover}).slice(0,5);
+  if(!items.length)return;
+  el.className="hero";
+  el.innerHTML=items.map(function(m,n){
+    return '<div class="slide'+(n?"":" on")+'"><div class="bg" style="background-image:url(\''+esc(m.cover)+'\')"></div><div class="in"><img class="pic" alt="" src="'+esc(m.cover)+'"><div class="tx"><div class="k">'+esc(t("trending"))+'</div><h2>'+esc(m.title)+'</h2><div class="tags">'+m.tags.slice(0,3).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join("")+'</div><p>'+esc(m.desc||"")+'</p><a class="btn primary" href="#/m/'+esc(m.id)+'">'+esc(t("details"))+'</a></div></div></div>';
+  }).join("")+'<div class="dots">'+items.map(function(m,n){return '<button data-i="'+n+'" aria-label="'+(n+1)+'"'+(n?"":' class="on"')+'></button>'}).join("")+'</div>';
+  var i=0;
+  function show(n){
+    i=n;
+    Array.prototype.forEach.call(el.querySelectorAll(".slide"),function(x,k){x.classList.toggle("on",k===n)});
+    Array.prototype.forEach.call(el.querySelectorAll(".dots button"),function(x,k){x.classList.toggle("on",k===n)});
+  }
+  Array.prototype.forEach.call(el.querySelectorAll(".dots button"),function(b){b.onclick=function(){show(+b.dataset.i)}});
+  if(items.length>1&&!matchMedia("(prefers-reduced-motion:reduce)").matches){
+    heroTimer=setInterval(function(){
+      if(my!==token||!document.body.contains(el)){clearInterval(heroTimer);return}
+      show((i+1)%items.length);
+    },6000);
+  }
+}
+function browse(){
+  var my=++token,offset=0,LIMIT=20,total=Infinity;
+  document.title="AdamDex";
+  $("#q").value=F.title;
+  function tagList(){
+    return (tagsCache||[]).map(function(x){return [x.id,x.name]});
+  }
+  app.innerHTML='<div id="hero"></div><h1>'+esc(F.title?t("results")+': “'+F.title+'”':t("popular"))+'</h1><div class="filters" id="fl"></div><div class="grid" id="gr"></div><div id="st" class="center"></div><div class="more"><button class="btn primary" id="mb" hidden>'+esc(t("more"))+'</button></div>';
+  function drawFilters(){
+    var ord=[["followedCount",t("followed")],["rating",t("rating")],["createdAt",t("createdAt")],["title",t("title")],["relevance",t("relevance")]];
+    var st=["ongoing","completed","hiatus","cancelled"].map(function(x){return [x,t(x)]});
+    var dm=["shounen","shoujo","seinen","josei"].map(function(x){return [x,t(x)]});
+    var og=["ja","ko","zh"].map(function(x){return [x,t(x)]});
+    $("#fl").innerHTML=
+     '<select data-k="order" aria-label="'+esc(t("order"))+'">'+opts(ord,F.order,t("order")).replace('<option value="">'+esc(t("order"))+'</option>',"")+'</select>'+
+     '<select data-k="status" aria-label="'+esc(t("status"))+'">'+opts(st,F.status,t("status")+": "+t("all"))+'</select>'+
+     '<select data-k="publicationDemographic" aria-label="'+esc(t("demo"))+'">'+opts(dm,F.publicationDemographic,t("demo")+": "+t("all"))+'</select>'+
+     '<select data-k="originalLanguage" aria-label="'+esc(t("origin"))+'">'+opts(og,F.originalLanguage,t("origin")+": "+t("all"))+'</select>'+
+     '<select data-k="tag" aria-label="'+esc(t("genre"))+'">'+opts(tagList(),F.tag,t("genre")+": "+t("all"))+'</select>';
+    Array.prototype.forEach.call(document.querySelectorAll("#fl select"),function(s){
+      s.onchange=function(){F[s.dataset.k]=s.value;browse()};
+    });
+  }
+  drawFilters();
+  if(!tagsCache){
+    api("/tags").then(function(r){
+      tagsCache=arr(r).map(function(x){var a=x.attributes||x;return {id:x.id,name:pick(a.name),group:a.group||""}})
+        .filter(function(x){return x.id&&x.name&&(!x.group||x.group==="genre"||x.group==="theme")}).sort(function(a,b){return a.name.localeCompare(b.name)});
+      if(my===token&&$("#fl"))drawFilters();
+    }).catch(function(){tagsCache=[]});
+  }
+  function load(){
+    var p=new URLSearchParams();
+    p.set("limit",LIMIT);p.set("offset",offset);
+    if(F.title)p.set("title",F.title);
+    var ord=F.order;if(F.title&&ord==="followedCount")ord="relevance";
+    if(ord)p.set("order",ord);
+    if(F.status)p.set("status",F.status);
+    if(F.publicationDemographic)p.set("publicationDemographic",F.publicationDemographic);
+    if(F.originalLanguage)p.set("originalLanguage",F.originalLanguage);
+    if(F.tag)p.append("includedTags",F.tag);
+    $("#st").textContent=t("loading");$("#mb").hidden=true;
+    if(offset===0)$("#gr").innerHTML=skel();
+    api("/manga?"+p.toString()).then(function(res){
+      if(my!==token)return;
+      var list=arr(res).map(norm);
+      total=typeof res.total==="number"?res.total:(list.length<LIMIT?offset+list.length:Infinity);
+      if(offset===0){$("#gr").innerHTML="";hero(list,my)}
+      $("#gr").insertAdjacentHTML("beforeend",list.map(cardHtml).join(""));
+      offset+=list.length;
+      $("#st").textContent=(!$("#gr").children.length)?t("empty"):"";
+      $("#mb").hidden=!(list.length>=LIMIT&&offset<total);
+    }).catch(function(){if(my===token){if(offset===0)$("#gr").innerHTML="";$("#st").innerHTML=esc(t("error"))+' <button class="btn" id="rt">'+esc(t("retry"))+'</button>';$("#rt").onclick=load}});
+  }
+  $("#mb").onclick=load;
+  load();
+}
+
+/* ---------- detail ---------- */
+var chapLang=store.get("chapLang")||"all";
+var chapAsc=false;
+function detail(id){
+  var my=++token;
+  app.innerHTML='<div class="center">'+esc(t("loading"))+'</div>';
+  Promise.all([
+    api("/manga/"+encodeURIComponent(id)),
+    api("/manga/"+encodeURIComponent(id)+"/feed?lang=id,en").catch(function(){return []}),
+    api("/manga/"+encodeURIComponent(id)+"/relation").catch(function(){return []})
+  ]).then(function(r){
+    if(my!==token)return;
+    var raw=r[0];var m=norm((raw&&raw.data&&!Array.isArray(raw.data))?raw.data:raw);
+    var chaps=arr(r[1]).map(normChap).filter(function(c){return c.id}).sort(numSort);
+    var rel=arr(r[2]).map(function(x){return norm(x.manga||x.related||x)}).filter(function(x){return x.id&&x.id!==id});
+    document.title=m.title+" — AdamDex";
+    window.__chaps={id:id,list:chaps};
+    function chapHtml(){
+      var l=chaps.filter(function(c){return chapLang==="all"||c.lang===chapLang});
+      if(!chapAsc)l=l.slice().reverse();
+      $("#cl").innerHTML=l.length?l.map(function(c){
+        return '<a class="chap" href="#/r/'+esc(c.id)+'/'+esc(id)+'"><b>'+esc(chapLabel(c))+'</b><small>'+esc(c.lang)+'</small></a>';
+      }).join(""):'<div class="center">'+esc(t("noChap"))+'</div>';
+      var first=chaps.filter(function(c){return chapLang==="all"||c.lang===chapLang})[0];
+      $("#rd").onclick=function(){if(first)location.hash="#/r/"+first.id+"/"+id};
+      $("#rd").disabled=!first;
+    }
+    app.innerHTML=
+     '<div class="detail"><div><img class="cover" alt="" src="'+esc(m.cover)+'"></div><div>'+
+     '<h1>'+esc(m.title)+'</h1>'+
+     '<div class="meta">'+[m.author,m.year,m.status&&t(m.status)].filter(Boolean).map(esc).join(" · ")+'</div>'+
+     '<div class="tags">'+m.tags.slice(0,12).map(function(x){return '<span class="tag">'+esc(x)+'</span>'}).join("")+'</div>'+
+     '<p class="desc">'+esc(m.desc||t("noDesc"))+'</p>'+
+     '<button class="btn primary" id="rd">'+esc(t("read"))+'</button></div></div>'+
+     '<div class="chead"><h2 style="margin:0">'+esc(t("chapters"))+' ('+chaps.length+')</h2><div class="row">'+
+     '<select class="btn" id="cf" aria-label="'+esc(t("lang"))+'"><option value="all">'+esc(t("all"))+'</option><option value="id">Indonesia</option><option value="en">English</option></select>'+
+     '<button class="btn" id="so"></button></div></div>'+
+     '<div class="chaps" id="cl"></div>'+
+     (rel.length?'<h2 style="margin-top:28px">'+esc(t("related"))+'</h2><div class="rel">'+rel.map(cardHtml).join("")+'</div>':"");
+    $("#cf").value=chapLang;
+    $("#cf").onchange=function(){chapLang=this.value;store.set("chapLang",chapLang);chapHtml()};
+    function soLabel(){$("#so").textContent=chapAsc?t("asc")+" ↑":t("desc2")+" ↓"}
+    $("#so").onclick=function(){chapAsc=!chapAsc;soLabel();chapHtml()};
+    soLabel();chapHtml();window.scrollTo(0,0);
+  }).catch(function(){if(my===token)showErr(function(){detail(id)})});
+}
+
+/* ---------- reader ---------- */
+var quality=store.get("quality")||"data";
+function chaptersFor(mid){
+  if(window.__chaps&&window.__chaps.id===mid)return Promise.resolve(window.__chaps.list);
+  return api("/manga/"+encodeURIComponent(mid)+"/feed?lang=id,en").then(function(r){
+    var l=arr(r).map(normChap).filter(function(c){return c.id}).sort(numSort);
+    window.__chaps={id:mid,list:l};return l;
+  }).catch(function(){return []});
+}
+function reader(cid,mid){
+  var my=++token;
+  app.innerHTML='<div class="center">'+esc(t("loading"))+'</div>';
+  Promise.all([api("/chapter/"+encodeURIComponent(cid)+"?quality="+quality),mid?chaptersFor(mid):Promise.resolve([])]).then(function(r){
+    if(my!==token)return;
+    var imgs=pagesOf(r[0],quality);
+    var all=r[1];
+    var cur=all.filter(function(c){return c.id===cid})[0];
+    var same=cur?all.filter(function(c){return c.lang===cur.lang}):all;
+    var i=same.findIndex(function(c){return c.id===cid});
+    var prev=i>0?same[i-1]:null,next=i>=0&&i<same.length-1?same[i+1]:null;
+    function go(c){location.hash="#/r/"+c.id+"/"+mid}
+    document.title=(cur?chapLabel(cur):t("chapter"))+" — AdamDex";
+    function nav(){
+      return '<button class="btn" data-n="p"'+(prev?"":" disabled")+'>'+esc(t("prev"))+'</button>'+
+             '<button class="btn" data-n="n"'+(next?"":" disabled")+'>'+esc(t("next"))+'</button>';
+    }
+    app.innerHTML='<div class="reader"><div class="rbar"><a class="btn" href="#/m/'+esc(mid||"")+'">'+esc(t("back"))+'</a>'+
+      '<select id="cs" aria-label="'+esc(t("chapters"))+'">'+same.map(function(c){return '<option value="'+esc(c.id)+'"'+(c.id===cid?" selected":"")+'>'+esc(chapLabel(c))+'</option>'}).join("")+'</select>'+
+      '<select id="qs" class="btn" style="flex:none" aria-label="'+esc(t("quality"))+'"><option value="data">'+esc(t("hq"))+'</option><option value="dataSaver">'+esc(t("dq"))+'</option></select></div>'+
+      '<div class="pages">'+imgs.map(function(u){return '<img loading="lazy" alt="" src="'+esc(u)+'">'}).join("")+'</div>'+
+      (imgs.length?"":'<div class="center">'+esc(t("empty"))+'</div>')+
+      '<div class="rfoot">'+nav()+'</div></div>';
+    $("#qs").value=quality;
+    $("#qs").onchange=function(){quality=this.value;store.set("quality",quality);reader(cid,mid)};
+    $("#cs").onchange=function(){location.hash="#/r/"+this.value+"/"+mid};
+    Array.prototype.forEach.call(document.querySelectorAll("[data-n]"),function(b){
+      b.onclick=function(){var c=b.dataset.n==="p"?prev:next;if(c){go(c);}};
+    });
+    window.__nav={prev:prev&&function(){go(prev)},next:next&&function(){go(next)}};
+    window.scrollTo(0,0);
+  }).catch(function(){if(my===token)showErr(function(){reader(cid,mid)})});
+}
+document.addEventListener("keydown",function(e){
+  if(!/^#\/r\//.test(location.hash)||/INPUT|SELECT|TEXTAREA/.test((e.target||{}).tagName||""))return;
+  var n=window.__nav||{};
+  if(e.key==="ArrowRight"&&n.next)n.next();
+  if(e.key==="ArrowLeft"&&n.prev)n.prev();
+});
+
+/* ---------- router & chrome ---------- */
+function route(){
+  var h=location.hash.replace(/^#/,"")||"/";
+  var p=h.split("/").filter(Boolean);
+  window.__nav=null;
+  if(p[0]==="m"&&p[1])detail(p[1]);
+  else if(p[0]==="r"&&p[1])reader(p[1],p[2]);
+  else browse();
+}
+function chrome(){
+  document.documentElement.lang=lang;
+  $("#q").placeholder=t("search");
+  $("#ft").textContent=t("foot");
+  $("#rnd").textContent="🎲 "+t("random");
+  $("#lg").textContent=lang.toUpperCase()+" ⇄ "+(lang==="id"?"EN":"ID");
+}
+$("#lg").onclick=function(){lang=lang==="id"?"en":"id";store.set("lang",lang);chrome();route()};
+$("#th").onclick=function(){
+  var cur=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  var nx=cur==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",nx);store.set("theme",nx);
+};
+var savedTheme=store.get("theme");if(savedTheme)document.documentElement.setAttribute("data-theme",savedTheme);
+$("#sf").onsubmit=function(e){
+  e.preventDefault();F.title=$("#q").value.trim();
+  if(location.hash&&location.hash!=="#/"){location.hash="#/";setTimeout(function(){F.title=$("#q").value.trim();},0)}
+  else browse();
+};
+$("#rnd").onclick=function(){
+  var b=$("#rnd");b.disabled=true;
+  api("/manga/random/get").then(function(r){
+    var d=(r&&r.data&&!Array.isArray(r.data))?r.data:r;
+    var id=(d&&(d.id||d.mangaId))||(typeof d==="string"?d:"");
+    if(id)location.hash="#/m/"+id;
+  }).catch(function(){}).then(function(){b.disabled=false});
+};
+window.addEventListener("scroll",function(){$("#up").classList.toggle("show",window.scrollY>700)},{passive:true});
+$("#up").onclick=function(){window.scrollTo({top:0,behavior:"smooth"})};
+window.addEventListener("hashchange",route);
+chrome();route();
+})();
+</script>
+</body>
+</html>
