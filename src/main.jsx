@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Search, Compass, Bookmark, Clock3, ChevronRight, ArrowLeft, Menu, X, BookOpen, Flame, ArrowUpRight, LoaderCircle, RotateCcw } from "lucide-react";
 import "./styles.css";
 
-const API = "/api/mangadex";
+const API = "https://mahirudex.vercel.app/api";
 const LANGS = ["en", "id"];
 
 function title(m) {
@@ -54,15 +54,29 @@ function unwrap(result) {
 }
 
 async function api(path, params = {}) {
-  const url = new URL(API, window.location.origin);
-  url.searchParams.set("path", path.replace(/^\/+/, ""));
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") return;
-    if (Array.isArray(value)) value.forEach(v => url.searchParams.append(key, v));
-    else url.searchParams.set(key, value);
+  const cleanPath = String(path).replace(/^\/+/, "");
+  const url = new URL(`${API}/${cleanPath}`);
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value == null || value === "") continue;
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => url.searchParams.append(key, item));
+    } else {
+      url.searchParams.set(key, String(value));
+    }
+  }
+
+  const response = await fetch(url.toString(), {
+    headers: { Accept: "application/json" },
   });
-  const response = await fetch(url.toString(), { headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(`API ${response.status}`);
+
+  if (!response.ok) {
+    throw new Error(
+      `MahiruDex API error: ${response.status} ${await response.text()}`
+    );
+  }
+
   return response.json();
 }
 
